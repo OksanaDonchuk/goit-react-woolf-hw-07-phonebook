@@ -1,29 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import css from './ContactList.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteContact } from 'store/contactsSlise';
-import { getContacts, getFilter } from 'store/selectors';
+import { selectContacts, selectError, selectIsLoading } from 'store/selectors';
+import { Loader } from 'components/Loader/Loader';
+import { deleteContact, getContacts } from 'store/operations';
 
-const ContactList = () => {
+export const ContactList = () => {
   const dispatch = useDispatch();
-  const filter = useSelector(getFilter);
-  const contacts = useSelector(getContacts);
+  const contacts = useSelector(selectContacts);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
 
-  const getFilteredContacts = () => {
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(filter.toLowerCase())
-    );
-  };
+  useEffect(() => {
+    dispatch(getContacts());
+  }, [dispatch]);
 
   return (
     <ul className={css.contact_list}>
-      {getFilteredContacts().map(contact => (
-        <li key={contact.id} className={css.contact_item}>
-          {contact.name}: {contact.number}
+      {isLoading && <Loader />}
+      {error && <b>{error}</b>}
+      {contacts.map(({ id, name, number }) => (
+        <li className={css.contact_item} key={id}>
+          {name}: {number}
           <button
             type="button"
             className={css.btn_delete}
-            onClick={() => dispatch(deleteContact(contact.id))}
+            onClick={() => {
+              dispatch(deleteContact(id));
+            }}
           >
             Delete
           </button>
@@ -32,5 +36,4 @@ const ContactList = () => {
     </ul>
   );
 };
-
 export default ContactList;

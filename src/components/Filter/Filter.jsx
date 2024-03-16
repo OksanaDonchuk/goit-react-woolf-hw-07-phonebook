@@ -1,16 +1,15 @@
 import React from 'react';
 import css from './Filter.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { changeFilter } from 'store/filterSlise';
-import { getFilter } from 'store/selectors';
+import { selectFilter } from 'store/selectors';
+import { filter } from 'store/filterSlise';
 
-const Filter = () => {
+export const Filter = () => {
   const dispatch = useDispatch();
-  const filter = useSelector(getFilter);
+  const searchFilter = useSelector(selectFilter);
 
   const onChangeFilter = event => {
-    const { value } = event.target;
-    dispatch(changeFilter(value));
+    dispatch(filter(event.target.value));
   };
 
   return (
@@ -18,7 +17,7 @@ const Filter = () => {
       <input
         className={css.search_input}
         type="text"
-        value={filter}
+        value={searchFilter ?? ''}
         onChange={onChangeFilter}
         placeholder="Search contacts"
       />

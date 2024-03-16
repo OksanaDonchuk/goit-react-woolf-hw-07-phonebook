@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
 import css from './ContactForm.module.css';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'store/contactsSlise';
 import { nanoid } from '@reduxjs/toolkit';
-import { getContacts } from 'store/selectors';
 
-const ContactForm = () => {
+import { addContact } from 'store/operations';
+import { selectFilteredContacts } from 'store/selectors';
+
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectFilteredContacts);
   const [contact, setContact] = useState({ name: '', number: '' });
   const { name, number } = contact;
-  const contacts = useSelector(getContacts);
-  const dispatch = useDispatch();
 
   const handleChange = event => {
     const { name, value } = event.target;

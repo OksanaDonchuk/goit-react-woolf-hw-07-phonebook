@@ -1,17 +1,43 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { addContact, deleteContact, getContacts } from './operations';
 
-const contactSlise = createSlice({
+const handleRejected = (state, { payload }) => {
+  state.isLoading = false;
+  state.error = payload;
+};
+
+const handlePending = state => {
+  state.isLoading = true;
+};
+
+const contactsSlice = createSlice({
   name: 'contacts',
-  initialState: { contacts: [] },
-  reducers: {
-    addContact(state, { payload }) {
-      state.contacts.push(payload);
-    },
-    deleteContact(state, { payload }) {
-      state.contacts = state.contacts.filter(contact => contact.id !== payload);
-    },
+  initialState: { items: [], isLoading: false, error: null },
+  extraReducers: builder => {
+    builder
+      .addCase(getContacts.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = null;
+        state.items = payload;
+      })
+      .addCase(addContact.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = null;
+        state.items.push(payload);
+      })
+      .addCase(deleteContact.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = null;
+        const index = state.items.findIndex(task => task.id === payload.id);
+        state.items.splice(index, 1);
+      })
+      .addMatcher(action => {
+        action.type.endsWith('/pending');
+      }, handlePending)
+      .addMatcher(action => {
+        action.type.endsWith('/rejected');
+      }, handleRejected);
   },
 });
 
-export const contactsReducer = contactSlise.reducer;
-export const { addContact, deleteContact } = contactSlise.actions;
+export const contactsReducer = contactsSlice.reducer;
