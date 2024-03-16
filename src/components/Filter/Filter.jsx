@@ -16,7 +16,7 @@ export const Filter = () => {
     <div className={css.search_container}>
       <input
         className={css.search_input}
-        type="text"
+        type="search"
         value={searchFilter ?? ''}
         onChange={onChangeFilter}
         placeholder="Search contacts"
